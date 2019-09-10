@@ -4,7 +4,7 @@
 
 	<groupId>com.ontotext.graphdb.plugins</groupId>
 	<artifactId>lucene-fts-plugin</artifactId>
-	<version>3.0-SNAPSHOT</version>
+	<version>3.0.0-RC1</version>
 	<name>Lucene FTS Plugin</name>
 	<description>Lucene FTS plugin for GraphDB</description>
 
@@ -200,7 +200,7 @@
 		<connection>scm:git:git@github.com:Ontotext-AD/graphdb-lucene-fts-plugin.git</connection>
 		<developerConnection>scm:git:git@github.com:Ontotext-AD/graphdb-lucene-fts-plugin.git</developerConnection>
 		<url>https://github.com/Ontotext-AD/graphdb-lucene-fts-plugin</url>
-		<tag>HEAD</tag>
+		<tag>3.0.0-RC1</tag>
 	</scm>
 
 </project>
