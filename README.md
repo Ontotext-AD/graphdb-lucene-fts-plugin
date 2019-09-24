@@ -1,8 +1,7 @@
 # GraphDB Lucene FTS Plugin
 
 This is the GraphDB Lucene FTS plugin. Note that this is different from the Lucene Connector. 
-More information about it is available in the GraphDB documentation here:
-http://graphdb.ontotext.com/documentation/enterprise/full-text-search.html
+More information about it is available in the GraphDB documentation here: http://graphdb.ontotext.com/documentation/enterprise/full-text-search.html
 
 ## Building the plugin
 
