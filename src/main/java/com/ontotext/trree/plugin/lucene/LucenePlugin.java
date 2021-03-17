@@ -1,5 +1,6 @@
 package com.ontotext.trree.plugin.lucene;
 
+import com.ontotext.trree.ReleaseInfo;
 import com.ontotext.trree.sdk.*;
 import com.ontotext.trree.util.FileUtils;
 import gnu.trove.TLongHashSet;
@@ -49,6 +50,10 @@ public class LucenePlugin extends PluginBase implements Preprocessor, PluginDepe
 	static final String TEMP_SUFFIX = ".temp";
 	static final String OLD_SUFFIX = ".old";
 
+	private static final String DOCUMENTATION_URL_TEMPLATE = "https://graphdb.ontotext.com/documentation/%s/%s/full-text-search.html";
+
+	private final String documentationUrl;
+
 	private Map<String, LuceneIndex> indices = new HashMap<String, LuceneIndex>();
 	private PluginLocator pluginLocator;
 
@@ -97,6 +102,20 @@ public class LucenePlugin extends PluginBase implements Preprocessor, PluginDepe
 		}
 	}
 
+	public LucenePlugin() {
+		ReleaseInfo releaseInfo = ReleaseInfo.get();
+		String version = releaseInfo.getVersion();
+		String edition = releaseInfo.getEdition();
+		if ("GRAPHDB_SE".equals(edition)) {
+			edition = "standard";
+		} else if ("GRAPHDB_ENTERPRISE".equals(edition)) {
+			edition = "enterprise";
+		} else {
+			edition = "free";
+		}
+		documentationUrl = String.format(DOCUMENTATION_URL_TEMPLATE, version, edition);
+	}
+
 	@Override
 	public String getName() {
 		return "lucene";
@@ -128,6 +147,9 @@ public class LucenePlugin extends PluginBase implements Preprocessor, PluginDepe
 		File dataDir = getDataDir();
 		File[] dirs = dataDir.listFiles();
 		if (dirs != null) {
+			// Prints warning on init if at least one index exists
+			printDeprecationWarning();
+
 			dirs = Arrays.copyOf(dirs, dirs.length + 1);
 			dirs[dirs.length - 1] = dataDir;
 			for (File dir : dirs) {
@@ -267,9 +289,15 @@ public class LucenePlugin extends PluginBase implements Preprocessor, PluginDepe
 				booleanResult = false;
 			}
 		} else if (Utils.match(predicate, idCreateIndex)) {
+			// Prints warning on creating a new index
+			printDeprecationWarning();
+
 			String suffix = Utils.matchPrefix(Utils.getString(pluginConnection.getEntities(), subject), Lucene.NAMESPACE);
 			booleanResult = suffix == null ? false : createIndex(suffix, pluginConnection);
 		} else if (Utils.match(predicate, idUpdateIndex)) {
+			// Prints warning on updating an index
+			printDeprecationWarning();
+
 			String suffix = Utils.matchPrefix(Utils.getString(pluginConnection.getEntities(), subject), Lucene.NAMESPACE);
 			booleanResult = suffix == null ? false : updateIndex(suffix, pluginConnection);
 		} else if (Utils.match(predicate, idAddToIndex)) {
@@ -1091,4 +1119,9 @@ public class LucenePlugin extends PluginBase implements Preprocessor, PluginDepe
 		return true;
 	}
 
+	private void printDeprecationWarning() {
+		getLogger().warn("The Lucene FTS plugin has been deprecated in favour of new functionality in the Connectors"
+				+ " and will be removed in a future version of GraphDB.");
+		getLogger().warn("See {} for more information.", documentationUrl);
+	}
 }
