@@ -9,12 +9,12 @@
 	<description>Lucene FTS plugin for GraphDB</description>
 
 	<properties>
-		<graphdb.version>9.0.0-TR16</graphdb.version>
+		<graphdb.version>9.10.1</graphdb.version>
 
 		<java.level>1.8</java.level>
 
-		<internal.repo>http://maven.ontotext.com/content/repositories/owlim-releases</internal.repo>
-		<snapshots.repo>http://maven.ontotext.com/content/repositories/owlim-snapshots</snapshots.repo>
+		<internal.repo>https://maven.ontotext.com/content/repositories/owlim-releases</internal.repo>
+		<snapshots.repo>https://maven.ontotext.com/content/repositories/owlim-snapshots</snapshots.repo>
 		<lucene.version>3.6.2</lucene.version>
 
         <!-- Empty defaults to keep things happy, argLine can be overridden on command line,
@@ -85,7 +85,7 @@
 		<repository>
 			<id>owlim-releases</id>
 			<name>GraphDB Releases</name>
-			<url>http://maven.ontotext.com/repository/owlim-releases</url>
+			<url>https://maven.ontotext.com/repository/owlim-releases</url>
 			<snapshots>
 				<enabled>false</enabled>
 			</snapshots>
