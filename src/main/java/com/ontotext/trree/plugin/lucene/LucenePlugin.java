@@ -105,15 +105,7 @@ public class LucenePlugin extends PluginBase implements Preprocessor, PluginDepe
 	public LucenePlugin() {
 		ReleaseInfo releaseInfo = ReleaseInfo.get();
 		String version = releaseInfo.getVersion();
-		String edition = releaseInfo.getEdition();
-		if ("GRAPHDB_SE".equals(edition)) {
-			edition = "standard";
-		} else if ("GRAPHDB_ENTERPRISE".equals(edition)) {
-			edition = "enterprise";
-		} else {
-			edition = "free";
-		}
-		documentationUrl = String.format(DOCUMENTATION_URL_TEMPLATE, version, edition);
+		documentationUrl = String.format(DOCUMENTATION_URL_TEMPLATE, version, "enterprise");
 	}
 
 	@Override
@@ -180,7 +172,7 @@ public class LucenePlugin extends PluginBase implements Preprocessor, PluginDepe
 		}
 		setDefaults();
 	}
-	
+
 	private void setDefaults() {
 		indexFilter.initialize("literals");
 		includeFilter.initialize("literals");
@@ -562,7 +554,7 @@ public class LucenePlugin extends PluginBase implements Preprocessor, PluginDepe
 
 	/**
 	 * (Incrementally) adds to FTS index all entities that have been added since last createIndex()
-	 * 
+	 *
 	 * Note: store the id of the last indexed entity in a sysdata field named FIELD_LASTINDEXED in the index.
 	 */
 	private boolean updateIndex(String indexName, PluginConnection pluginConnection) {
@@ -628,7 +620,7 @@ public class LucenePlugin extends PluginBase implements Preprocessor, PluginDepe
 			} catch (IOException e) {
 			}
 			return false;
-		} finally { 
+		} finally {
 			try {
 			if (searcher != null)
 				searcher.close();
@@ -867,7 +859,7 @@ public class LucenePlugin extends PluginBase implements Preprocessor, PluginDepe
 	 * similar, but it builds the molecule and indexes a single entity. Those 2 methods share a similar logic
 	 * (especially in their prologues) so if you need to modify one of them, you'd better check if the next
 	 * one needs a similar modification.
-	 * 
+	 *
 	 * @param index
 	 * @param writer
 	 * @param moleculesModel
