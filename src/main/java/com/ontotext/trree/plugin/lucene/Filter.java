@@ -1,6 +1,7 @@
 package com.ontotext.trree.plugin.lucene;
 
 import java.util.Arrays;
+import java.util.Iterator;
 
 public class Filter implements JSONizer.JSONizableAsSimpleMap {
 	protected String[]  flags;
@@ -69,6 +70,16 @@ public class Filter implements JSONizer.JSONizableAsSimpleMap {
 	}
 
 	public void  initFromMap(JSONparser.MapVal map) throws JSONparser.Exception {
+/*		this.flags  = new String[map.size()];
+		this.values = new boolean[map.size()];
+		Iterator<String> keys = map.keys().iterator();
+		int i = 0;
+		while (keys.hasNext()) {
+			String key = keys.next();
+			flags[i]  = key;
+			values[i] = map.get(key).asBoolean();
+			i++;
+		} */
 		for (int i = 0; i < flags.length; i++) {
 			values[i] = map.get(flags[i]).asBoolean();
 		}

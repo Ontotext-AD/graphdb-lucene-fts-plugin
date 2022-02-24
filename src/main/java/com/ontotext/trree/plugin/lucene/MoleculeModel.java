@@ -1,13 +1,7 @@
 package com.ontotext.trree.plugin.lucene;
 
-import com.ontotext.trree.sdk.Entities;
-import com.ontotext.trree.sdk.StatementIterator;
-import com.ontotext.trree.sdk.Statements;
-import com.ontotext.trree.util.TableStorage;
 import gnu.trove.TLongHashSet;
 import gnu.trove.TLongIterator;
-import org.eclipse.rdf4j.model.IRI;
-import org.eclipse.rdf4j.model.Value;
 
 import java.io.File;
 import java.io.IOException;
@@ -15,6 +9,15 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.regex.Pattern;
+
+import org.eclipse.rdf4j.model.IRI;
+import org.eclipse.rdf4j.model.URI;
+import org.eclipse.rdf4j.model.Value;
+
+import com.ontotext.trree.sdk.Entities;
+import com.ontotext.trree.sdk.StatementIterator;
+import com.ontotext.trree.sdk.Statements;
+import com.ontotext.trree.util.TableStorage;
 
 public class MoleculeModel implements JSONizer.JSONizableAsSimpleMap {
 	private Statements statements;
@@ -219,7 +222,7 @@ public class MoleculeModel implements JSONizer.JSONizableAsSimpleMap {
 	}
 
 	private String stringify(Value value) {
-		return (value instanceof IRI) ? ((IRI) value).getLocalName() : value.stringValue();
+		return (value instanceof URI) ? ((URI) value).getLocalName() : value.stringValue();
 	}
 
 	private TLongHashSet buildMolecule(long id, Entities.Type type, TLongHashSet molecule) {

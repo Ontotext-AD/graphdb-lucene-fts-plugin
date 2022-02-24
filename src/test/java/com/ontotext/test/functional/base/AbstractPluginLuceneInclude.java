@@ -4,6 +4,7 @@ import static org.junit.Assert.assertEquals;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.eclipse.rdf4j.model.impl.LiteralImpl;
 import org.eclipse.rdf4j.query.QueryLanguage;
 import org.eclipse.rdf4j.query.TupleQuery;
 import org.eclipse.rdf4j.query.TupleQueryResult;
@@ -163,7 +164,7 @@ public abstract class AbstractPluginLuceneInclude extends SingleRepositoryFuncti
 		try {
 			connection = getRepository().getConnection();
 			TupleQuery preparedQuery = connection.prepareTupleQuery(QueryLanguage.SPARQL, Q13a);
-			preparedQuery.setBinding("key", vf.createLiteral("Rug*"));
+			preparedQuery.setBinding("key", new LiteralImpl("Rug*"));
 			TupleQueryResult rezult = ((TupleQuery)preparedQuery).evaluate();
 			while (rezult.hasNext()) {
 				System.out.println(rezult.next());
