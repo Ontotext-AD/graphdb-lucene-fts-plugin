@@ -1,6 +1,5 @@
 package com.ontotext.trree.plugin.lucene;
 
-import com.ontotext.trree.ReleaseInfo;
 import com.ontotext.trree.sdk.*;
 import com.ontotext.trree.sdk.Entities.Scope;
 import com.ontotext.trree.sdk.impl.RequestContextImpl;
@@ -41,10 +40,6 @@ public class LucenePlugin extends PluginBase implements Preprocessor, PluginDepe
 	static final String ATTRIBUTE_ITERATORS = "lucene.iterators";
 	static final String TEMP_SUFFIX = ".temp";
 	static final String OLD_SUFFIX = ".old";
-
-	private static final String DOCUMENTATION_URL_TEMPLATE = "https://graphdb.ontotext.com/documentation/%s/%s/full-text-search.html";
-
-	private final String documentationUrl;
 
 	private Map<String, LuceneIndex> indices = new HashMap<String, LuceneIndex>();
 	private PluginLocator pluginLocator;
@@ -92,23 +87,6 @@ public class LucenePlugin extends PluginBase implements Preprocessor, PluginDepe
 		} catch (Exception e) {
 			throw new IllegalArgumentException("Failed to instantiate class " + className, e);
 		}
-	}
-
-	public LucenePlugin() {
-		ReleaseInfo releaseInfo = ReleaseInfo.get();
-		String version = releaseInfo.getVersion();
-/*
-		String edition = releaseInfo.getEdition();
-		if ("GRAPHDB_SE".equals(edition)) {
-			edition = "standard";
-		} else if ("GRAPHDB_ENTERPRISE".equals(edition)) {
-			edition = "enterprise";
-		} else {
-			edition = "free";
-		}*/
-		//TODO SET THE CORRECT LINK TO GDB 10 DOCUMENTATION
-		documentationUrl = "https://graphdb.ontotext.com/documentation/";
-		//String.format(DOCUMENTATION_URL_TEMPLATE, version, edition);
 	}
 
 	@Override
@@ -1115,8 +1093,6 @@ public class LucenePlugin extends PluginBase implements Preprocessor, PluginDepe
 	}
 
 	private void printDeprecationWarning() {
-		getLogger().warn("The Lucene FTS plugin has been deprecated in favour of new functionality in the Connectors"
-				+ " and will be removed in a future version of GraphDB.");
-		getLogger().warn("See {} for more information.", documentationUrl);
+		getLogger().warn("The Lucene FTS plugin has been deprecated in favour of new functionality in the Connectors.");
 	}
 }
