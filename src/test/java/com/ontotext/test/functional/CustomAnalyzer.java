@@ -1,11 +1,7 @@
 package com.ontotext.test.functional;
 
-import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.LowerCaseTokenizer;
 import org.apache.lucene.analysis.ReusableAnalyzerBase;
-import org.apache.lucene.analysis.SimpleAnalyzer;
-import org.apache.lucene.analysis.en.EnglishAnalyzer;
-import org.apache.lucene.analysis.standard.ClassicAnalyzer;
 import org.apache.lucene.util.Version;
 
 import java.io.Reader;
