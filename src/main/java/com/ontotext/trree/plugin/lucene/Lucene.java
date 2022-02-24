@@ -1,32 +1,34 @@
 package com.ontotext.trree.plugin.lucene;
 
-import org.eclipse.rdf4j.model.URI;
-import org.eclipse.rdf4j.model.impl.URIImpl;
+import org.eclipse.rdf4j.model.IRI;
+import org.eclipse.rdf4j.model.ValueFactory;
+import org.eclipse.rdf4j.model.impl.SimpleValueFactory;
 
 public class Lucene {
 	static final String OLD_NAMESPACE = "http://www.ontotext.com/";
 
+	private static final ValueFactory F = SimpleValueFactory.getInstance();
+
 	public static final String NAMESPACE = "http://www.ontotext.com/owlim/lucene#";
-	public static final URI QUERY = new URIImpl(NAMESPACE + "query");
-	public static final URI SET_PARAM = new URIImpl(NAMESPACE + "setParam");
-	public static final URI ANALYZER = new URIImpl(NAMESPACE + "analyzer");
-	public static final URI SCORER = new URIImpl(NAMESPACE + "scorer");
-	public static final URI LANGUAGES = new URIImpl(NAMESPACE + "languages");
-	public static final URI INDEX = new URIImpl(NAMESPACE + "index");
-	public static final URI INCLUDE = new URIImpl(NAMESPACE + "include");
-	public static final URI EXCLUDE = new URIImpl(NAMESPACE + "exclude");
-	public static final URI INCLUDE_PREDICATES = new URIImpl(NAMESPACE + "includePredicates");
-	public static final URI EXCLUDE_PREDICATES = new URIImpl(NAMESPACE + "excludePredicates");
-	public static final URI INCLUDE_ENTITIES = new URIImpl(NAMESPACE + "includeEntities");
-	public static final URI EXCLUDE_ENTITIES = new URIImpl(NAMESPACE + "excludeEntities");
-	public static final URI MOLECULE_SIZE = new URIImpl(NAMESPACE + "moleculeSize");
-	public static final URI USE_RDF_RANK = new URIImpl(NAMESPACE + "useRDFRank");
-	public static final URI CREATE_INDEX = new URIImpl(NAMESPACE + "createIndex");
-	public static final URI UPDATE_INDEX = new URIImpl(NAMESPACE + "updateIndex");
-	public static final URI ADD_TO_INDEX = new URIImpl(NAMESPACE + "addToIndex");
-	public static final URI SCORE = new URIImpl(NAMESPACE + "score");
+	public static final IRI QUERY = F.createIRI(NAMESPACE + "query");
+	public static final IRI SET_PARAM = F.createIRI(NAMESPACE + "setParam");
+	public static final IRI ANALYZER = F.createIRI(NAMESPACE + "analyzer");
+	public static final IRI SCORER = F.createIRI(NAMESPACE + "scorer");
+	public static final IRI LANGUAGES = F.createIRI(NAMESPACE + "languages");
+	public static final IRI INDEX = F.createIRI(NAMESPACE + "index");
+	public static final IRI INCLUDE = F.createIRI(NAMESPACE + "include");
+	public static final IRI EXCLUDE = F.createIRI(NAMESPACE + "exclude");
+	public static final IRI INCLUDE_PREDICATES = F.createIRI(NAMESPACE + "includePredicates");
+	public static final IRI EXCLUDE_PREDICATES = F.createIRI(NAMESPACE + "excludePredicates");
+	public static final IRI INCLUDE_ENTITIES = F.createIRI(NAMESPACE + "includeEntities");
+	public static final IRI EXCLUDE_ENTITIES = F.createIRI(NAMESPACE + "excludeEntities");
+	public static final IRI MOLECULE_SIZE = F.createIRI(NAMESPACE + "moleculeSize");
+	public static final IRI USE_RDF_RANK = F.createIRI(NAMESPACE + "useRDFRank");
+	public static final IRI CREATE_INDEX = F.createIRI(NAMESPACE + "createIndex");
+	public static final IRI UPDATE_INDEX = F.createIRI(NAMESPACE + "updateIndex");
+	public static final IRI ADD_TO_INDEX = F.createIRI(NAMESPACE + "addToIndex");
+	public static final IRI SCORE = F.createIRI(NAMESPACE + "score");
 
-	public static final URI OLD_QUERY = new URIImpl(OLD_NAMESPACE + "luceneQuery");
-
+	public static final IRI OLD_QUERY = F.createIRI(OLD_NAMESPACE + "luceneQuery");
 
 }
