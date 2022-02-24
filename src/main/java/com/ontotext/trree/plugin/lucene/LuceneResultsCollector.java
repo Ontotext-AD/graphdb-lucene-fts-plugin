@@ -1,9 +1,5 @@
 package com.ontotext.trree.plugin.lucene;
 
-import java.io.IOException;
-import java.util.Comparator;
-import java.util.PriorityQueue;
-
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.FieldSelector;
 import org.apache.lucene.document.Fieldable;
@@ -12,6 +8,10 @@ import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.search.Collector;
 import org.apache.lucene.search.ScoreDoc;
 import org.apache.lucene.search.Scorer;
+
+import java.io.IOException;
+import java.util.Comparator;
+import java.util.PriorityQueue;
 
 public class LuceneResultsCollector extends Collector {
 	private IndexReader reader;

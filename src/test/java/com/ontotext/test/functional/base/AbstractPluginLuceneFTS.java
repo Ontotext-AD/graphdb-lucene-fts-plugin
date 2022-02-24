@@ -1,41 +1,34 @@
 package com.ontotext.test.functional.base;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
-import org.junit.runners.Parameterized.Parameters;
-import org.eclipse.rdf4j.OpenRDFException;
-import org.eclipse.rdf4j.model.BNode;
-import org.eclipse.rdf4j.model.Literal;
-import org.eclipse.rdf4j.model.Statement;
-import org.eclipse.rdf4j.model.URI;
-import org.eclipse.rdf4j.model.Value;
-import org.eclipse.rdf4j.model.impl.BNodeImpl;
-import org.eclipse.rdf4j.model.impl.LiteralImpl;
-import org.eclipse.rdf4j.model.impl.URIImpl;
+import com.ontotext.test.utils.SparqlHelper;
+import com.ontotext.test.utils.Utils;
+import com.ontotext.trree.plugin.lucene.Lucene;
+import org.eclipse.rdf4j.model.*;
+import org.eclipse.rdf4j.model.impl.SimpleValueFactory;
 import org.eclipse.rdf4j.query.BindingSet;
 import org.eclipse.rdf4j.query.QueryLanguage;
 import org.eclipse.rdf4j.query.TupleQuery;
 import org.eclipse.rdf4j.query.TupleQueryResult;
 import org.eclipse.rdf4j.repository.RepositoryConnection;
 import org.eclipse.rdf4j.repository.RepositoryResult;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
+import org.junit.runners.Parameterized.Parameters;
 
-import com.ontotext.test.utils.SparqlHelper;
-import com.ontotext.test.utils.Utils;
-import com.ontotext.trree.plugin.lucene.Lucene;
+import java.util.Arrays;
+import java.util.List;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 @RunWith(Parameterized.class)
 public abstract class AbstractPluginLuceneFTS extends SingleRepositoryFunctionalTest {
 	private boolean useUpdate;
-	
+	//We need static factory for constants
+	protected static final ValueFactory F = SimpleValueFactory.getInstance();
+
 	public AbstractPluginLuceneFTS(boolean useUpdate) {
 		this.useUpdate = useUpdate;
 	}
@@ -48,18 +41,18 @@ public abstract class AbstractPluginLuceneFTS extends SingleRepositoryFunctional
 	}
 
 	@Before
-	public void setUp() throws Exception {
+	public void setUp() {
 		RepositoryConnection connection = null;
 
 		try {
 			connection = getRepository().getConnection();
 			connection.begin();
-			
+
 			connection.clear();
 			connection.commit();
-			
+
 			SparqlHelper helper = new SparqlHelper(connection);
-			
+
 			String update =
 					"INSERT DATA { " +
 					"ex:a ex:label \"some funky label\" . " +
@@ -76,15 +69,15 @@ public abstract class AbstractPluginLuceneFTS extends SingleRepositoryFunctional
 					"_:b3 ex:label \"danke\" . " +
 					"_:b3 ex:label \"danke\"@de . " +
 					" }";
-			
+
 			helper.update( update, false);
 		} finally {
 			Utils.close(connection);
 		}
 	}
-	
+
 	@Before
-	public void prepareTestCase() throws OpenRDFException {
+	public void prepareTestCase() {
 		// set default parameter values
 		setParam(Lucene.LANGUAGES, "");
 		setParam(Lucene.INDEX, "literals");
@@ -101,17 +94,17 @@ public abstract class AbstractPluginLuceneFTS extends SingleRepositoryFunctional
 		}
 	}
 
-	private void testQuery(String indexName, String query, Value... values) throws OpenRDFException {
+	private void testQuery(String indexName, String query, Value... values) {
 		RepositoryConnection connection = null;
 		try {
 			connection = getRepository().getConnection();
-			
+
 			String sparql =
 					"SELECT ?s { ?s <" + Lucene.NAMESPACE + indexName + "> \"" + query + "\" }";
-			
+
 			SparqlHelper helper = new SparqlHelper(connection);
 			helper.tupleQuery(sparql, false);
-			
+
 			for( Value value : values) {
 				helper.verify("s", value);
 			}
@@ -121,28 +114,28 @@ public abstract class AbstractPluginLuceneFTS extends SingleRepositoryFunctional
 		}
 	}
 
-	private void setParam(URI name, String value) throws OpenRDFException {
+	private void setParam(IRI name, String value) {
 		assertTrue(eval(
 				name,
 				Lucene.SET_PARAM,
-				new LiteralImpl(value)));
+				vf.createLiteral(value)));
 	}
 
-	private void createIndex(String name) throws OpenRDFException {
+	private void createIndex(String name) {
 		assertTrue(eval(
-				new URIImpl(Lucene.NAMESPACE + name),
+				vf.createIRI(Lucene.NAMESPACE + name),
 				Lucene.CREATE_INDEX,
-				new LiteralImpl("true")));
+				vf.createLiteral("true")));
 	}
 
-	private void addToIndex(String name, Value node) throws OpenRDFException {
+	private void addToIndex(String name, Value node) {
 		assertTrue(eval(
-				new URIImpl(Lucene.NAMESPACE + name),
+				vf.createIRI(Lucene.NAMESPACE + name),
 				Lucene.ADD_TO_INDEX,
 				node));
 	}
 
-	private boolean eval(URI subject, URI predicate, Value object) throws OpenRDFException {
+	private boolean eval(IRI subject, IRI predicate, Value object) {
 		RepositoryConnection connection = null;
 		try {
 			connection = getRepository().getConnection();
@@ -167,27 +160,28 @@ public abstract class AbstractPluginLuceneFTS extends SingleRepositoryFunctional
 	protected String getCustomAnalyzer() {
 		return null;
 	}
-	
-	private static final Literal FIRST_BLANK_LABEL = new LiteralImpl("first blank label");
-	private static final Literal SECOND_BLANK_LABEL = new LiteralImpl("second blank label");
-	private static final Literal SOME_FUNKY_LABEL = new LiteralImpl("some funky label");
-	private static final Literal PRETTY_INFORMATIVE_LABEL = new LiteralImpl("pretty informative label");
-	private static final Literal DANKE  = new LiteralImpl("danke");
-	private static final Literal DANKE_DE  = new LiteralImpl("danke", "de");
-	private static final Literal TEST  = new LiteralImpl("test");
-	private static final Literal TEST_BG  = new LiteralImpl("test", "bg");
-	private static final Literal ALABALA = new LiteralImpl("alabala");
-	private static final URI LABEL_PREDICATE  = new URIImpl(SparqlHelper.exampleNamespace() + "label");
-	private static final URI LINK_PREDICATE  = new URIImpl(SparqlHelper.exampleNamespace() + "link");
-	private static final URI A = new URIImpl(SparqlHelper.exampleNamespace() + "a");
-	private static final URI B = new URIImpl(SparqlHelper.exampleNamespace() + "b");
-	private static final URI C = new URIImpl(SparqlHelper.exampleNamespace() + "c");
-	
-	private static final BNode B1 = new BNodeImpl("b1");
-	private static final BNode B2 = new BNodeImpl("b2");
+
+	private static final Literal FIRST_BLANK_LABEL = F.createLiteral("first blank label");
+	private static final Literal SECOND_BLANK_LABEL = F.createLiteral("second blank label");
+	private static final Literal SOME_FUNKY_LABEL = F.createLiteral("some funky label");
+	private static final Literal PRETTY_INFORMATIVE_LABEL = F.createLiteral("pretty informative label");
+	private static final Literal DANKE  = F.createLiteral("danke");
+	private static final Literal DANKE_DE  = F.createLiteral("danke", "de");
+	private static final Literal TEST  = F.createLiteral("test");
+	private static final Literal TEST_BG  = F.createLiteral("test", "bg");
+	private static final Literal ALABALA = F.createLiteral("alabala");
+
+	private static final IRI LABEL_PREDICATE  = F.createIRI(SparqlHelper.exampleNamespace() + "label");
+	private static final IRI LINK_PREDICATE  = F.createIRI(SparqlHelper.exampleNamespace() + "link");
+	private static final IRI A = F.createIRI(SparqlHelper.exampleNamespace() + "a");
+	private static final IRI B = F.createIRI(SparqlHelper.exampleNamespace() + "b");
+	private static final IRI C = F.createIRI(SparqlHelper.exampleNamespace() + "c");
+
+	private static final BNode B1 = F.createBNode("b1");
+	private static final BNode B2 = F.createBNode("b2");
 
 	@Test
-	public void testMoleculeSize0OnlyLiterals() throws Exception {
+	public void testMoleculeSize0OnlyLiterals() {
 		setParam(Lucene.MOLECULE_SIZE, "0");
 		setParam(Lucene.INDEX, "uris,literals");
 		setParam(Lucene.INCLUDE, "literals");
@@ -198,7 +192,7 @@ public abstract class AbstractPluginLuceneFTS extends SingleRepositoryFunctional
 	}
 
 	@Test
-	public void testMoleculeSize0NotOnlyLiterals() throws Exception {
+	public void testMoleculeSize0NotOnlyLiterals() {
 		setParam(Lucene.MOLECULE_SIZE, "0");
 		setParam(Lucene.INDEX, "uris,literals");
 		setParam(Lucene.INCLUDE, "   uri, literal  ");
@@ -208,7 +202,7 @@ public abstract class AbstractPluginLuceneFTS extends SingleRepositoryFunctional
 	}
 
 	@Test
-	public void testMoleculeSize1NotOnlyLiterals() throws Exception {
+	public void testMoleculeSize1NotOnlyLiterals() {
 		setParam(Lucene.MOLECULE_SIZE, "1");
 		setParam(Lucene.INDEX, "uris,literals,bnodes");
 		setParam(Lucene.INCLUDE, "uri,literal");
@@ -226,7 +220,7 @@ public abstract class AbstractPluginLuceneFTS extends SingleRepositoryFunctional
 	}
 
 	@Test
-	public void testMoleculeSize1OnlyLiterals() throws Exception {
+	public void testMoleculeSize1OnlyLiterals() {
 		setParam(Lucene.MOLECULE_SIZE, "1");
 		setParam(Lucene.INDEX, "uris,literals,bnodes");
 		setParam(Lucene.INCLUDE, "literals");
@@ -245,7 +239,7 @@ public abstract class AbstractPluginLuceneFTS extends SingleRepositoryFunctional
 	}
 
 	@Test
-	public void testMoleculeSize2NotOnlyLiterals() throws Exception {
+	public void testMoleculeSize2NotOnlyLiterals() {
 		setParam(Lucene.MOLECULE_SIZE, "2");
 		setParam(Lucene.INDEX, "uris,literals,bnodes");
 		setParam(Lucene.INCLUDE, "uris, literals");
@@ -268,7 +262,7 @@ public abstract class AbstractPluginLuceneFTS extends SingleRepositoryFunctional
 	}
 
 	@Test
-	public void testMoleculeSize2OnlyLiterals() throws Exception {
+	public void testMoleculeSize2OnlyLiterals() {
 		setParam(Lucene.MOLECULE_SIZE, "2");
 		setParam(Lucene.INDEX, "uris,literals,bnodes");
 		setParam(Lucene.INCLUDE, "literal");
@@ -290,7 +284,7 @@ public abstract class AbstractPluginLuceneFTS extends SingleRepositoryFunctional
 	}
 
 	@Test
-	public void testMoleculeSize3NotOnlyLiterals() throws Exception {
+	public void testMoleculeSize3NotOnlyLiterals() {
 		setParam(Lucene.MOLECULE_SIZE, "3");
 		setParam(Lucene.INDEX, "uris,literals,bnodes");
 		setParam(Lucene.INCLUDE, "uris,literals");
@@ -313,7 +307,7 @@ public abstract class AbstractPluginLuceneFTS extends SingleRepositoryFunctional
 	}
 
 	@Test
-	public void testMoleculeSize3NotOnlyLiteralsNoBNodes() throws Exception {
+	public void testMoleculeSize3NotOnlyLiteralsNoBNodes() {
 		setParam(Lucene.MOLECULE_SIZE, "3");
 		setParam(Lucene.INCLUDE, "uris,literals");
 		setParam(Lucene.INDEX, "uris,literals");
@@ -334,7 +328,7 @@ public abstract class AbstractPluginLuceneFTS extends SingleRepositoryFunctional
 	}
 
 	@Test
-	public void testLanguages() throws Exception {
+	public void testLanguages() {
 		// test with filter by language
 		setParam(Lucene.MOLECULE_SIZE, "0");
 		setParam(Lucene.LANGUAGES, "bg,de");
@@ -377,7 +371,7 @@ public abstract class AbstractPluginLuceneFTS extends SingleRepositoryFunctional
 	}
 
 	@Test
-	public void testExclude() throws Exception {
+	public void testExclude() {
 		setParam(Lucene.MOLECULE_SIZE, "0");
 		setParam(Lucene.INDEX, "literals");
 		setParam(Lucene.INCLUDE, "literals");
@@ -394,7 +388,7 @@ public abstract class AbstractPluginLuceneFTS extends SingleRepositoryFunctional
 	}
 
 	@Test
-	public void testDefaultIndex() throws Exception {
+	public void testDefaultIndex() {
 		setParam(Lucene.MOLECULE_SIZE, "0");
 		setParam(Lucene.INDEX, "literals");
 		setParam(Lucene.INCLUDE, "literals");
@@ -403,7 +397,7 @@ public abstract class AbstractPluginLuceneFTS extends SingleRepositoryFunctional
 	}
 
 	@Test
-	public void testQueryResultsOrder() throws Exception {
+	public void testQueryResultsOrder() {
 		setParam(Lucene.MOLECULE_SIZE, "3");
 		setParam(Lucene.INDEX, "uris,literals,bnodes");
 		setParam(Lucene.INCLUDE, "uris,literals");
@@ -417,14 +411,14 @@ public abstract class AbstractPluginLuceneFTS extends SingleRepositoryFunctional
 		TupleQueryResult result = null;
 		try {
 			connection = getRepository().getConnection();
-			
+
 			String sparql =
 					"SELECT ?s { ?s <" + Lucene.NAMESPACE + "idx" + "> \"label\" }";
 
 			TupleQuery query = connection.prepareTupleQuery(QueryLanguage.SPARQL, sparql);
-			
+
 			result = query.evaluate();
-			
+
 			int index = 0;
 			while (result.hasNext()) {
 				Value val = result.next().getBinding("s").getValue();
@@ -446,7 +440,7 @@ public abstract class AbstractPluginLuceneFTS extends SingleRepositoryFunctional
 	}
 
 	@Test
-	public void testScored() throws Exception {
+	public void testScored() {
 		setParam(Lucene.MOLECULE_SIZE, "3");
 		setParam(Lucene.INDEX, "uris,literals,bnodes");
 		setParam(Lucene.INCLUDE, "uris,literals");
@@ -455,7 +449,7 @@ public abstract class AbstractPluginLuceneFTS extends SingleRepositoryFunctional
 		RepositoryConnection connection = null;
 		try {
 			connection = getRepository().getConnection();
-			
+
 			String sparql =
 					"SELECT * {"
 							+ "?node <http://www.ontotext.com/owlim/lucene#score> ?score ."
@@ -463,7 +457,7 @@ public abstract class AbstractPluginLuceneFTS extends SingleRepositoryFunctional
 			TupleQuery query = connection.prepareTupleQuery(QueryLanguage.SPARQL, sparql);
 
 			TupleQueryResult res = query.evaluate();
-			
+
 			float prevScore = Float.MAX_VALUE;
 			while (res.hasNext()) {
 				BindingSet bs = res.next();
@@ -481,7 +475,7 @@ public abstract class AbstractPluginLuceneFTS extends SingleRepositoryFunctional
 	}
 
 	@Test
-	public void testIncludeExclude() throws Exception {
+	public void testIncludeExclude() {
 		setParam(Lucene.MOLECULE_SIZE, "3");
 		setParam(Lucene.INCLUDE, "uris,literals");
 		setParam(Lucene.INDEX, "uris,literals");
@@ -534,7 +528,7 @@ public abstract class AbstractPluginLuceneFTS extends SingleRepositoryFunctional
 		createIndex("idx");
 
 		testQuery("idx", "pretty AND informative", C);
-		
+
 		// =================
 		setParam(Lucene.INCLUDE_PREDICATES, "");
 		setParam(Lucene.EXCLUDE_PREDICATES, "");
@@ -542,7 +536,7 @@ public abstract class AbstractPluginLuceneFTS extends SingleRepositoryFunctional
 		setParam(Lucene.INCLUDE, "literals");
 		createIndex("idx");
 		testQuery("idx", "pretty AND informative", C);
-		
+
 		setParam(Lucene.EXCLUDE_PREDICATES, LABEL_PREDICATE.stringValue());
 		createIndex("idx");
 		testQuery("idx", "pretty AND informative");
@@ -554,12 +548,12 @@ public abstract class AbstractPluginLuceneFTS extends SingleRepositoryFunctional
 	}
 
 	@Test
-	public void testStackoverflowErrorBBC84() throws Exception {
+	public void testStackoverflowErrorBBC84() {
 		setParam(Lucene.MOLECULE_SIZE, "1");
 		setParam(Lucene.INCLUDE, "uris,literals");
 		setParam(Lucene.INDEX, "uris,literals");
 		createIndex("idx");
-		
+
 		RepositoryConnection connection = null;
 		try {
 			connection = getRepository().getConnection();
@@ -570,6 +564,6 @@ public abstract class AbstractPluginLuceneFTS extends SingleRepositoryFunctional
 		} finally {
 			Utils.close(connection);
 		}
-		addToIndex("idx", new URIImpl("urn:1"));
+		addToIndex("idx", vf.createIRI("urn:1"));
 	}
 }
