@@ -2,8 +2,9 @@ package com.ontotext.test.functional.base;
 
 import static org.junit.Assert.assertEquals;
 
-import org.junit.Before;
-import org.junit.Test;
+import com.ontotext.graphdb.Config;
+import com.ontotext.test.TemporaryLocalFolder;
+import org.junit.*;
 import org.eclipse.rdf4j.query.QueryLanguage;
 import org.eclipse.rdf4j.query.TupleQuery;
 import org.eclipse.rdf4j.query.TupleQueryResult;
@@ -49,6 +50,21 @@ public abstract class AbstractPluginLuceneInclude extends SingleRepositoryFuncti
 
 	private static final String BASE_URI = "http://ex.org/test";
 
+	@ClassRule
+	public static TemporaryLocalFolder tmpFolder = new TemporaryLocalFolder();
+
+	@BeforeClass
+	public static void setWorkDir() {
+		System.setProperty("graphdb.home.work", String.valueOf(tmpFolder.getRoot()));
+		Config.reset();
+	}
+
+	@AfterClass
+	public static void resetWorkDir() {
+		System.clearProperty("graphdb.home.work");
+		Config.reset();
+	}
+
 	@Before
 	public void createRepositories() throws Exception {
 		RepositoryConnection connection = getRepository().getConnection();
@@ -56,7 +72,7 @@ public abstract class AbstractPluginLuceneInclude extends SingleRepositoryFuncti
 		config.set(BasicParserSettings.FAIL_ON_UNKNOWN_DATATYPES, false);
 		config.set(BasicParserSettings.VERIFY_DATATYPE_VALUES, false);
 		config.set(BasicParserSettings.NORMALIZE_DATATYPE_VALUES, false);
-		
+
 		connection.setParserConfig(config);
 
 		java.io.InputStream is = this.getClass().getResourceAsStream(BSBM_TEST_DATA);
@@ -64,7 +80,7 @@ public abstract class AbstractPluginLuceneInclude extends SingleRepositoryFuncti
 		is.close();
 
 		connection.commit();
-		
+
 		Utils.close(connection);
 	}
 
@@ -106,7 +122,7 @@ public abstract class AbstractPluginLuceneInclude extends SingleRepositoryFuncti
 		q14();
 		q15();
 	}
-	
+
 	public void q1() throws Exception {
 		queryRepositoryBoolean(Q1, true);
 	}

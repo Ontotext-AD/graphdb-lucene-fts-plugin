@@ -1,5 +1,7 @@
 package com.ontotext.test.functional.base;
 
+import com.ontotext.graphdb.Config;
+import com.ontotext.test.TemporaryLocalFolder;
 import com.ontotext.test.utils.SparqlHelper;
 import com.ontotext.test.utils.Utils;
 import com.ontotext.trree.plugin.lucene.Lucene;
@@ -11,8 +13,7 @@ import org.eclipse.rdf4j.query.TupleQuery;
 import org.eclipse.rdf4j.query.TupleQueryResult;
 import org.eclipse.rdf4j.repository.RepositoryConnection;
 import org.eclipse.rdf4j.repository.RepositoryResult;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.*;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
@@ -29,6 +30,9 @@ public abstract class AbstractPluginLuceneFTS extends SingleRepositoryFunctional
 	//We need static factory for constants
 	protected static final ValueFactory F = SimpleValueFactory.getInstance();
 
+	@ClassRule
+	public static TemporaryLocalFolder tmpFolder = new TemporaryLocalFolder();
+
 	public AbstractPluginLuceneFTS(boolean useUpdate) {
 		this.useUpdate = useUpdate;
 	}
@@ -38,6 +42,18 @@ public abstract class AbstractPluginLuceneFTS extends SingleRepositoryFunctional
 		return Arrays.<Object[]>asList(
 				new Object[] { true },
 				new Object[] { false });
+	}
+
+	@BeforeClass
+	public static void setWorkDir() {
+		System.setProperty("graphdb.home.work", String.valueOf(tmpFolder.getRoot()));
+		Config.reset();
+	}
+
+	@AfterClass
+	public static void resetWorkDir() {
+		System.clearProperty("graphdb.home.work");
+		Config.reset();
 	}
 
 	@Before
