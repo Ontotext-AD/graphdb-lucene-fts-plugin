@@ -6,8 +6,9 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
-import org.junit.Before;
-import org.junit.Test;
+import com.ontotext.graphdb.Config;
+import com.ontotext.test.TemporaryLocalFolder;
+import org.junit.*;
 import org.eclipse.rdf4j.query.QueryLanguage;
 import org.eclipse.rdf4j.repository.RepositoryConnection;
 import org.eclipse.rdf4j.repository.RepositoryException;
@@ -33,6 +34,9 @@ public class TestOwlimSePluginLuceneConcurrentSearch extends SingleRepositoryFun
 	private static final int NUM_THREADS = 4;
 	private static final int NUM_SEARCHES = 1000;
 
+	@ClassRule
+	public static TemporaryLocalFolder tmpFolder = new TemporaryLocalFolder();
+
 	@Override
 	protected RepositoryConfig createRepositoryConfiguration() {
 		OwlimSeRepositoryDescription repositoryDescription = new OwlimSeRepositoryDescription();
@@ -40,6 +44,17 @@ public class TestOwlimSePluginLuceneConcurrentSearch extends SingleRepositoryFun
 		return repositoryDescription.getRepositoryConfig();
 	}
 
+	@BeforeClass
+	public static void setWorkDir() {
+		System.setProperty("graphdb.home.work", String.valueOf(tmpFolder.getRoot()));
+		Config.reset();
+	}
+
+	@AfterClass
+	public static void resetWorkDir() {
+		System.clearProperty("graphdb.home.work");
+		Config.reset();
+	}
 
 	@Before
 	public void createRepositories() throws Exception {
@@ -48,7 +63,7 @@ public class TestOwlimSePluginLuceneConcurrentSearch extends SingleRepositoryFun
 		config.set(BasicParserSettings.FAIL_ON_UNKNOWN_DATATYPES, false);
 		config.set(BasicParserSettings.VERIFY_DATATYPE_VALUES, false);
 		config.set(BasicParserSettings.NORMALIZE_DATATYPE_VALUES, false);
-		
+
 		connection.setParserConfig(config);
 
         java.io.InputStream is = this.getClass().getResourceAsStream(TEST_DATA);
