@@ -110,6 +110,12 @@
 			<artifactId>graphdb-runtime</artifactId>
 			<scope>provided</scope>
 			<version>${graphdb.version}</version>
+			<exclusions>
+				<exclusion>
+					<groupId>it.unibz.inf.ontop</groupId>
+					<artifactId>*</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 
 		<dependency>
