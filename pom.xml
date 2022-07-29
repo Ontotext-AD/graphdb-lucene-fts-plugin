@@ -141,6 +141,12 @@
 			<artifactId>graphdb-tests-base</artifactId>
 			<scope>test</scope>
 			<version>${graphdb.version}</version>
+			<exclusions>
+				<exclusion>
+					<groupId>it.unibz.inf.ontop</groupId>
+					<artifactId>*</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 
         <dependency>
