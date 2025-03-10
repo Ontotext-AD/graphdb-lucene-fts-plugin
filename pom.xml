@@ -9,7 +9,7 @@
 	<description>Lucene FTS plugin for GraphDB</description>
 
 	<properties>
-		<graphdb.version>11.0.0-TR9</graphdb.version>
+		<graphdb.version>11.0.0-TR12</graphdb.version>
 
 		<java.level>1.8</java.level>
 

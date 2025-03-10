@@ -17,13 +17,13 @@ import com.ontotext.trree.transactions.TransactionException;
  */
 
 public class TableStorage {
-    private long rows;
-    private long cols;
+    private final long rows;
+    private final long cols;
 
-    private PairCollection collection;
+    private final PairCollection collection;
     private PairConnection connection;
 
-    public abstract class Iterator {
+    public abstract static class Iterator {
         public abstract boolean hasNext();
 
         public abstract long next();
@@ -66,18 +66,19 @@ public class TableStorage {
         connection.add(x, y);
     }
 
-    public com.ontotext.trree.plugin.lucene.TableStorage.Iterator rowIterator(final long row) {
-        return new com.ontotext.trree.plugin.lucene.TableStorage.Iterator() {
+    public Iterator rowIterator(final long row) {
+        return new Iterator() {
             private long[] values = new long[10];
             private int size, curr;
             {
-                StatementIdIterator iter = connection.get(row, Long.MIN_VALUE, row, Long.MAX_VALUE);
-                while (iter.hasNext()) {
-                    if (size >= values.length) {
-                        values = Arrays.copyOf(values, values.length * 2);
+                try (StatementIdIterator iter = connection.get(row, Long.MIN_VALUE, row, Long.MAX_VALUE)) {
+                    while (iter.hasNext()) {
+                        if (size >= values.length) {
+                            values = Arrays.copyOf(values, values.length * 2);
+                        }
+                        values[size++] = iter.pred;
+                        iter.next();
                     }
-                    values[size++] = iter.pred;
-                    iter.next();
                 }
             }
 
@@ -105,8 +106,11 @@ public class TableStorage {
             }
         } catch (TransactionException ex) {
             LoggerFactory.getLogger(this.getClass()).error("Failed committing collection", ex);
+        } finally {
+            if (connection != null) {
+                connection.close();
+            }
+            collection.shutdown();
         }
-        connection.close();
-        collection.shutdown();
     }
 }
