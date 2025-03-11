@@ -3,7 +3,6 @@ package com.ontotext.trree.plugin.lucene;
 import com.ontotext.trree.sdk.Entities;
 import com.ontotext.trree.sdk.StatementIterator;
 import com.ontotext.trree.sdk.Statements;
-import com.ontotext.trree.util.TableStorage;
 import gnu.trove.TLongHashSet;
 import gnu.trove.TLongIterator;
 import org.eclipse.rdf4j.model.IRI;
