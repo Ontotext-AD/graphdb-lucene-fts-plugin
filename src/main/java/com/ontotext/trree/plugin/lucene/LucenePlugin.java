@@ -510,11 +510,11 @@ public class LucenePlugin extends PluginBase implements Preprocessor, PluginDepe
 
 		// move lucene files from the old index directory to a temporary folder
 		oldIndexDir.mkdirs();
-		FileUtils.moveDirectoryFilesTo(indexDir, oldIndexDir);
+		this.moveDirectoryFilesTo(indexDir, oldIndexDir);
 
 		// move new lucene files from their temporary directory to the actual one
 		indexDir.mkdirs();
-		FileUtils.moveDirectoryFilesTo(tempIndexDir, indexDir);
+		this.moveDirectoryFilesTo(tempIndexDir, indexDir);
 		// update index with its new location
 		try {
 			index.setDataDir(indexDir);
@@ -1094,5 +1094,27 @@ public class LucenePlugin extends PluginBase implements Preprocessor, PluginDepe
 
 	private void printDeprecationWarning() {
 		getLogger().warn("The Lucene FTS plugin has been deprecated in favour of new functionality in the Connectors.");
+	}
+
+	/**
+	 * Move files from some directory to another. This method doesn't work on sub-directories, just files
+	 *
+	 * @param sourceDir Directory to get the files from
+	 * @param targetDir Directory where to move the files
+	 *
+	 * @return true if operation was successful false otherwise
+	 */
+	private boolean moveDirectoryFilesTo(File sourceDir, File targetDir) {
+		File[] fileList = sourceDir.listFiles();
+		if (fileList != null) {
+			for (File f : fileList) {
+				if (!f.isFile())
+					continue;
+				if (!f.renameTo(new File(targetDir, f.getName()))) {
+					return false;
+				}
+			}
+		}
+		return true;
 	}
 }
